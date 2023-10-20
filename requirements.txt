@@ -1,0 +1,16 @@
+boto3==1.23.10
+fastapi==0.63.0
+fastapi_cloudauth==0.4.3
+googlemaps==4.10.0
+mangum==0.10.0
+mercantile==1.2.1
+numpy
+pandas
+pycognito==2023.5.0
+pydantic==1.7.3
+python_json_logger==2.0.1
+rio-tiler==4.1.11
+rioxarray==0.13.4
+scipy==1.10.1
+starlette==0.13.6
+uvicorn==0.13.2
