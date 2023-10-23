@@ -14,13 +14,11 @@ phases:
       - echo verifying PROJECT_NAME, $PROJECT_NAME
       - echo Authenticating with Amazon ECR…
       - aws ecr get-login-password --region $ECR_REGION | docker login --username AWS --password-stdin $ECR_REGISTRY_URI
-      - COMMIT_TIME=$(git show -s --format=%ci $CODEBUILD_RESOLVED_SOURCE_VERSION)
-      - echo $COMMIT_TIME > commit_time.txt
   build:
     commands:
       - COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
       - BRANCH_NAME=$(echo $CODEBUILD_WEBHOOK_HEAD_REF | cut -d'/' -f 3)
-      - COMMIT_TIME=$(cat commit_time.txt)
+      - COMMIT_TIME=$(date +%Y%m%d%H%M%S)
       - IMAGE_TAG="$COMMIT_TIME-$BRANCH_NAME-$COMMIT_HASH"
       - echo image tag , $IMAGE_TAG
       - docker build -t $PROJECT_NAME .
