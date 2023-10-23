@@ -1,0 +1,33 @@
+version: 0.2
+env:
+  variables:
+    PROJECT_NAME: $PROJECT_NAME 
+    ECR_REGISTRY_URI: $ECR_REGISTRY_URI 
+    ECR_REGION: $ECR_REGION 
+    LAMBDA_CONTAINER_NAME: $LAMBDA_CONTAINER_NAME 
+    ALIAS_NAME: $ALIAS_NAME 
+phases:
+  pre_build:
+    commands:
+      - echo verifying ECR_REGISTRY_URI, $ECR_REGISTRY_URI
+      - echo verifying ECR_REGION, $ECR_REGION
+      - echo verifying PROJECT_NAME, $PROJECT_NAME
+      - echo Authenticating with Amazon ECR…
+      - aws ecr get-login-password --region $ECR_REGION | docker login --username AWS --password-stdin $ECR_REGISTRY_URI
+      - COMMIT_TIME=$(git show -s --format=%ci $CODEBUILD_RESOLVED_SOURCE_VERSION)
+      - echo $COMMIT_TIME > commit_time.txt
+  build:
+  commands:
+    - COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
+    - BRANCH_NAME=$(echo $CODEBUILD_WEBHOOK_HEAD_REF | cut -d'/' -f 3)
+    - COMMIT_TIME=$(cat commit_time.txt)
+    - IMAGE_TAG="$COMMIT_TIME-$BRANCH_NAME-$COMMIT_HASH"
+    - docker build -t $PROJECT_NAME .
+    - docker tag $PROJECT_NAME:latest $ECR_REGISTRY_URI/$PROJECT_NAME:$IMAGE_TAG
+    - docker push $ECR_REGISTRY_URI/$PROJECT_NAME:$IMAGE_TAG
+  post_build:
+    commands:
+      - IMAGE_TAG=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
+      - IMAGE_URI=$ECR_REGISTRY_URI/$PROJECT_NAME:$IMAGE_TAG
+      # - bash builder/lambda-config.sh $IMAGE_URI $ALIAS_NAME $LAMBDA_CONTAINER_NAME
+      - echo I made a new change
