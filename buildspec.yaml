@@ -17,14 +17,14 @@ phases:
       - COMMIT_TIME=$(git show -s --format=%ci $CODEBUILD_RESOLVED_SOURCE_VERSION)
       - echo $COMMIT_TIME > commit_time.txt
   build:
-  commands:
-    - COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
-    - BRANCH_NAME=$(echo $CODEBUILD_WEBHOOK_HEAD_REF | cut -d'/' -f 3)
-    - COMMIT_TIME=$(cat commit_time.txt)
-    - IMAGE_TAG="$COMMIT_TIME-$BRANCH_NAME-$COMMIT_HASH"
-    - docker build -t $PROJECT_NAME .
-    - docker tag $PROJECT_NAME:latest $ECR_REGISTRY_URI/$PROJECT_NAME:$IMAGE_TAG
-    - docker push $ECR_REGISTRY_URI/$PROJECT_NAME:$IMAGE_TAG
+    commands:
+      - COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
+      - BRANCH_NAME=$(echo $CODEBUILD_WEBHOOK_HEAD_REF | cut -d'/' -f 3)
+      - COMMIT_TIME=$(cat commit_time.txt)
+      - IMAGE_TAG="$COMMIT_TIME-$BRANCH_NAME-$COMMIT_HASH"
+      - docker build -t $PROJECT_NAME .
+      - docker tag $PROJECT_NAME:latest $ECR_REGISTRY_URI/$PROJECT_NAME:$IMAGE_TAG
+      - docker push $ECR_REGISTRY_URI/$PROJECT_NAME:$IMAGE_TAG
   post_build:
     commands:
       - IMAGE_TAG=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
