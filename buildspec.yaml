@@ -6,6 +6,7 @@ env:
     ECR_REGION: $ECR_REGION 
     LAMBDA_CONTAINER_NAME: $LAMBDA_CONTAINER_NAME 
     ALIAS_NAME: $ALIAS_NAME 
+    BRANCH_NAME: $BRANCH_NAME
 phases:
   pre_build:
     commands:
