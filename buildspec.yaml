@@ -30,3 +30,4 @@ phases:
       - IMAGE_TAG=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
       - IMAGE_URI=$ECR_REGISTRY_URI/$PROJECT_NAME:$IMAGE_TAG
       - bash builder/lambda-config.sh $IMAGE_URI $ALIAS_NAME $LAMBDA_CONTAINER_NAME
+      
