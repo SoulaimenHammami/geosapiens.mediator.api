@@ -18,14 +18,6 @@ from app.handlers.http_exception_handler import http_exception_handler
 from app.service import run
 from app.Utils import * 
 
-print("printing values")
-print("PSQL_DATABASE" , PSQL_DATABASE)
-print("PSQL_HOST" , PSQL_HOST)
-print("PSQL_PASSWORD" , PSQL_PASSWORD)
-print("PSQL_PORT" , PSQL_PORT)
-print("PSQL_USER" , PSQL_USER)
-print("CONNECTION_MAX_OVERFLOW" , CONNECTION_MAX_OVERFLOW)
-print("CONNECTION_POOL_SIZE" , CONNECTION_POOL_SIZE)
 ###############################################################################
 #   Application object                                                        #
 ###############################################################################
