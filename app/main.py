@@ -1,10 +1,9 @@
 import uuid
 from urllib.request import Request
-print("hello world")
 import uvicorn
 
 from fastapi import HTTPException
-
+from app.routes import helloworld_router
 from mangum import Mangum
 from fastapi import FastAPI
 from app.routes import mediator_router
@@ -106,6 +105,7 @@ app.add_middleware(CorrelationIdMiddleware)
 ###############################################################################
 #   Routers configuration                                                     #
 ###############################################################################
+app.include_router(helloworld_router.router, prefix='/hello', tags=['Geosapiens hello'])
 
 app.include_router(auth_router.router, prefix='/auth', tags=['Geosapiens Auth API'])
 app.include_router(mediator_router.router, prefix='/mediator', tags=['Mediator API'])
