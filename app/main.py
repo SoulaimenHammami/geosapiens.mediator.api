@@ -1,11 +1,13 @@
 import uuid
 from urllib.request import Request
+
 import uvicorn
 
 from fastapi import HTTPException
-from app.routes import helloworld_router
+
 from mangum import Mangum
 from fastapi import FastAPI
+from app.routes import client_rest_router
 from app.routes import mediator_router
 from app.routes import auth_router
 from app.monitoring import logging_config
@@ -13,7 +15,7 @@ from app.middlewares.correlation_id_middleware import CorrelationIdMiddleware
 from app.middlewares.logging_middleware import LoggingMiddleware
 from app.handlers.exception_handler import exception_handler
 from app.handlers.http_exception_handler import http_exception_handler
-
+from app.service import run
 ###############################################################################
 #   Application object                                                        #
 ###############################################################################
@@ -81,6 +83,11 @@ async def validate_ip(request: Request, call_next):
     # Proceed if IP is allowed
     return await call_next(request)
 """
+
+###############################################################################
+#   Running db migrations                                                     #
+###############################################################################
+run()
 ###############################################################################
 #   Logging configuration                                                     #
 ###############################################################################
@@ -105,17 +112,15 @@ app.add_middleware(CorrelationIdMiddleware)
 ###############################################################################
 #   Routers configuration                                                     #
 ###############################################################################
-app.include_router(helloworld_router.router, prefix='/hello', tags=['Geosapiens hello'])
 
 app.include_router(auth_router.router, prefix='/auth', tags=['Geosapiens Auth API'])
 app.include_router(mediator_router.router, prefix='/mediator', tags=['Mediator API'])
-
+app.include_router(client_rest_router.router, prefix='/client', tags=['hello'])
 ###############################################################################
 #   Handler for AWS Lambda                                                    #
 ###############################################################################
-print("before the handler")
+
 handler = Mangum(app)
-print("AFTER the handler")
 
 ###############################################################################
 #   Run the self contained application                                        #
@@ -123,4 +128,3 @@ print("AFTER the handler")
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=5000)
-    print("AFTER if name == main")
