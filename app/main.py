@@ -113,8 +113,9 @@ app.include_router(mediator_router.router, prefix='/mediator', tags=['Mediator A
 ###############################################################################
 #   Handler for AWS Lambda                                                    #
 ###############################################################################
-
+print("before the handler")
 handler = Mangum(app)
+print("AFTER the handler")
 
 ###############################################################################
 #   Run the self contained application                                        #
@@ -122,3 +123,4 @@ handler = Mangum(app)
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=5000)
+    print("AFTER if name == main")
