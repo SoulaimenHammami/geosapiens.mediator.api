@@ -24,5 +24,7 @@ phases:
       - docker push $ECR_REGISTRY_URI/$PROJECT_NAME:$IMAGE_TAG
   post_build:
     commands:
+      - echo  image tag $IMAGE_TAG  
       - IMAGE_URI=$ECR_REGISTRY_URI/$PROJECT_NAME:$IMAGE_TAG
       - bash builder/lambda-config.sh $IMAGE_URI $ALIAS_NAME $LAMBDA_CONTAINER_NAME
+
