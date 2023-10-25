@@ -1,4 +1,4 @@
-FROM public.ecr.aws/lambda/python:3.8  
+FROM public.ecr.aws/lambda/python:3.8
 COPY requirements.txt .
 RUN pip install --default-timeout 10000 -r requirements.txt
 COPY app ./app
