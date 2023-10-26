@@ -1,35 +1,5 @@
-# Use python:3.9-slim as builder
-FROM public.ecr.aws/lambda/python:3.8 as builder
-
-# Set working directory
-WORKDIR /app
-
-# Set environment variables
-ENV PYTHONDONTWRITEBYTECODE 1
-ENV PYTHONUNBUFFERED 1
-
-# Install virtualenv and create a virtual environment
-RUN pip install virtualenv && \
-    virtualenv /opt/venv
-
-# Set PATH environment variable
-ENV PATH="/opt/venv/bin:$PATH"
-
-# Copy requirements.txt and install requirements
+FROM public.ecr.aws/lambda/python:3.8
 COPY requirements.txt .
 RUN pip install --default-timeout 10000 -r requirements.txt
-
-# Use FROM public.ecr.aws/lambda/python:3.8 for the final image
-FROM public.ecr.aws/lambda/python:3.8
-
-# Copy virtual environment from builder image
-COPY --from=builder /opt/venv /opt/venv
-
-# Set PATH environment variable
-ENV PATH="/opt/venv/bin:$PATH"
-
-# Copy app directory
 COPY app ./app
-
-# Set default command
 CMD ["app.main.handler"]
