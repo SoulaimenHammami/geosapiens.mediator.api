@@ -10,9 +10,6 @@ env:
 phases:
   pre_build:
     commands:
-      - echo verifying ECR_REGISTRY_URI, $ECR_REGISTRY_URI
-      - echo verifying ECR_REGION, $ECR_REGION
-      - echo verifying PROJECT_NAME, $PROJECT_NAME
       - echo Authenticating with Amazon ECR…
       - aws ecr get-login-password --region $ECR_REGION | docker login --username AWS --password-stdin $ECR_REGISTRY_URI
   build:
@@ -20,13 +17,20 @@ phases:
       - COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
       - COMMIT_TIME=$(date +%Y%m%d%H%M%S)
       - IMAGE_TAG="$COMMIT_TIME-$BRANCH_NAME-$COMMIT_HASH"
+      - export IMAGE_TAG
       - echo image tag , $IMAGE_TAG
-      - docker build -t $PROJECT_NAME .
+      - docker build -t $PROJECT_NAME . -f Dockerfile.aws.lambda
       - docker tag $PROJECT_NAME:latest $ECR_REGISTRY_URI/$PROJECT_NAME:$IMAGE_TAG
       - docker push $ECR_REGISTRY_URI/$PROJECT_NAME:$IMAGE_TAG
   post_build:
     commands:
-      - IMAGE_TAG=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
+      - echo  image tag $IMAGE_TAG  
       - IMAGE_URI=$ECR_REGISTRY_URI/$PROJECT_NAME:$IMAGE_TAG
-      - bash builder/lambda-config.sh $IMAGE_URI $ALIAS_NAME $LAMBDA_CONTAINER_NAME
-      
+      - echo updating lambda function with new docker container...
+      - aws lambda update-function-code --function-name $LAMBDA_CONTAINER_NAME --image-uri $IMAGE_URI 
+      - echo code 256 $CODE_256 , wating lambda function updating...
+      - aws lambda wait function-updated --function-name $LAMBDA_CONTAINER_NAME
+      - NEW_VERSION=$(aws lambda publish-version --function-name $LAMBDA_CONTAINER_NAME  --query 'Version' --output text)
+      - echo Updating alias...
+      - aws lambda update-alias  --function-name $LAMBDA_CONTAINER_NAME --name $ALIAS_NAME --function-version $NEW_VERSION
+      - echo Done!, Lambda function $LAMBDA_CONTAINER_NAME updated with Docker image $IMAGE_URI and ALIAS_NAME $ALIAS_NAME set to version $NEW_VERSION
