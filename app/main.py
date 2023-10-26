@@ -7,6 +7,7 @@ from fastapi import HTTPException
 
 from mangum import Mangum
 from fastapi import FastAPI
+from app.routes import client_rest_router
 from app.routes import mediator_router
 from app.routes import auth_router
 from app.monitoring import logging_config
@@ -14,6 +15,8 @@ from app.middlewares.correlation_id_middleware import CorrelationIdMiddleware
 from app.middlewares.logging_middleware import LoggingMiddleware
 from app.handlers.exception_handler import exception_handler
 from app.handlers.http_exception_handler import http_exception_handler
+from app.service import run
+from app.Utils import * 
 
 ###############################################################################
 #   Application object                                                        #
@@ -82,6 +85,11 @@ async def validate_ip(request: Request, call_next):
     # Proceed if IP is allowed
     return await call_next(request)
 """
+
+###############################################################################
+#   Running db migrations                                                     #
+###############################################################################
+run()
 ###############################################################################
 #   Logging configuration                                                     #
 ###############################################################################
@@ -109,7 +117,7 @@ app.add_middleware(CorrelationIdMiddleware)
 
 app.include_router(auth_router.router, prefix='/auth', tags=['Geosapiens Auth API'])
 app.include_router(mediator_router.router, prefix='/mediator', tags=['Mediator API'])
-
+app.include_router(client_rest_router.router, prefix='/client', tags=['hello'])
 ###############################################################################
 #   Handler for AWS Lambda                                                    #
 ###############################################################################
