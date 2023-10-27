@@ -32,6 +32,6 @@ phases:
       - aws lambda wait function-updated --function-name $LAMBDA_CONTAINER_NAME
       - NEW_VERSION=$(aws lambda publish-version --function-name $LAMBDA_CONTAINER_NAME  --query 'Version' --output text)
       - echo Updating alias...
-      - aws lambda update-alias --function-name $LAMBDA_CONTAINER_NAME --name $ALIAS_NAME --routing-config AdditionalVersionWeights={"$NEW_VERSION"=70}
+      - aws lambda update-alias --function-name $LAMBDA_CONTAINER_NAME --name $ALIAS_NAME --routing-config AdditionalVersionWeights={"$NEW_VERSION"=0.8}
       # - aws lambda update-alias  --function-name $LAMBDA_CONTAINER_NAME --name $ALIAS_NAME --function-version $NEW_VERSION
       - echo Done!, Lambda function $LAMBDA_CONTAINER_NAME updated with Docker image $IMAGE_URI and ALIAS_NAME $ALIAS_NAME set to version $NEW_VERSION
