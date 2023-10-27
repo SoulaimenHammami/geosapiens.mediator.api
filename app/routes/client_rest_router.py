@@ -4,6 +4,7 @@ from fastapi import Depends , Response
 from sqlalchemy.orm import Session
 from app.service.database.db_connector import Connection
 from pydantic import BaseModel
+
 router = APIRouter()
 class ClientSchema(BaseModel) :
     name:str
@@ -43,3 +44,11 @@ async def get_client(name:str , value: int , session:Session=Depends(Connection(
     
     return "Client updated successfully!"
 
+@router.get("/run/migrations")
+async def run_migrations():
+    try:
+        from app.service import run
+        run()
+    except Exception as e :
+        print(e)
+        return f"error accured when running migrations , {e}"

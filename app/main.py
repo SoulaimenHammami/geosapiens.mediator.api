@@ -15,7 +15,7 @@ from app.middlewares.correlation_id_middleware import CorrelationIdMiddleware
 from app.middlewares.logging_middleware import LoggingMiddleware
 from app.handlers.exception_handler import exception_handler
 from app.handlers.http_exception_handler import http_exception_handler
-from app.service import run
+# from app.service import run
 from app.Utils import * 
 
 ###############################################################################
